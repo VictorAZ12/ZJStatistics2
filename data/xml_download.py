@@ -18,8 +18,7 @@ async def download_file(url):
 
 async def main():
     with open("./xmls_anni1.txt", "r") as f:
-        urls = [url.rstrip('\n') for url in f.readlines()][:3]
-    print(urls)
+        urls = [url.rstrip('\n') for url in f.readlines()]
     
     tasks = []
     for url in urls:
