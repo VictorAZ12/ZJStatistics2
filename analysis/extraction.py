@@ -3,12 +3,12 @@ import os
 from datetime import datetime
 import json
 # path to the directory in which the xml files are stored
-file_path = "../data/"
+file_path = "./data/"
 # get all file names ending with '.xml'
 filenames = [file for file in os.listdir(file_path) if file.endswith(".xml")]
 # initialise audience data storage and log file
 audience = {}
-with open("log.txt","w") as f:
+with open("log.txt","w", encoding="UTF-8") as f:
     f.write("")
 for filename in filenames:
     # open an xml file and extract comments
@@ -25,8 +25,8 @@ for filename in filenames:
         uid = re.findall("p=\".*?\"", comment)[0].split(",")[-2]
         if re.fullmatch("[0-9]*", uid) is None:
             # report if non-number UID is found
-            with open("log.txt","a") as f:
-                f.write("File " + filename + " contains non-number UIDs")
+            with open("log.txt","a", encoding="UTF-8") as f:
+                f.write("File " + filename + " contains non-number UIDs.\n")
             break
         else:
             if uid in uids:
@@ -36,9 +36,9 @@ for filename in filenames:
                     "comment_count" : 1,
                     "date" : stream_date
                 }
-    if len(audience) < 10:
-        with open("log.txt","a") as f:
-            f.write("File " + filename + " contains less than 10 UIDs, skipped.")
+    if len(uids) < 10:
+        with open("log.txt","a", encoding="UTF-8") as f:
+            f.write("File " + filename + " contains less than 10 UIDs, skipped.\n")
         continue
     # add extracted information into database
     for uid in uids:
@@ -56,5 +56,11 @@ for filename in filenames:
             }
 
 # output result
+for uid in audience:
+    audience[uid]["first_seen"] = audience[uid]["first_seen"].strftime("%Y.%m.%d")
+    audience[uid]["last_seen"] = audience[uid]["last_seen"].strftime("%Y.%m.%d")
+
+print(len(audience), "audience discovered in total.")
 with open("output.txt", "w") as f:
-    f.write(json.dumps(audience))
+    f.write(json.dumps(audience, indent=4))
+
