@@ -24,7 +24,7 @@ for filename in filenames:
     uids = {}
     for comment in comments:
         uid = re.findall("p=\".*?\"", comment)[0].split(",")[-2]
-        if re.fullmatch("[0-9]*", uid) is None:
+        if re.fullmatch("[0-9]+", uid) is None:
             # report if non-number UID is found
             with open(output_path + "log.txt","a", encoding="UTF-8") as f:
                 f.write("File " + filename + " contains non-number UIDs.\n")
@@ -41,7 +41,7 @@ for filename in filenames:
         with open(output_path + "log.txt","a", encoding="UTF-8") as f:
             f.write("File " + filename + " contains less than 10 UIDs, skipped.\n")
         continue
-    # add extracted information into database
+    # add extracted information into database，then print log.
     for uid in uids:
         if uid in audience:
             audience[uid]["stream_count"] += 1
@@ -55,12 +55,14 @@ for filename in filenames:
                 "stream_count": 1,
                 "comment_count": uids[uid]["comment_count"]
             }
+    with open(output_path + "log.txt","a", encoding="UTF-8") as f:
+            f.write(f"File {filename}: {len(uids)} viewers, {len(comments)} comments\n")
 
-# output result
+# convert datetime to text
 for uid in audience:
     audience[uid]["first_seen"] = audience[uid]["first_seen"].strftime("%Y.%m.%d")
     audience[uid]["last_seen"] = audience[uid]["last_seen"].strftime("%Y.%m.%d")
-
+# output result
 print(len(audience), "audience discovered in total.")
 with open(output_path + "output.txt", "w") as f:
     f.write(json.dumps(audience, indent=4))
