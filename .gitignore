@@ -1,5 +1,2 @@
-/data/xml_files/
 /analysis/.ipynb_checkpoints/
 *.xml
-/analysis/log.txt
-/analysis/output.txt
