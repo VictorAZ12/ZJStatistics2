@@ -1,6 +1,40 @@
 import requests
+import json
 
-# https://ukamnads.icu/api/v2/live?liveId=79cb895b-8820-4d80-a3d2-3dc9cb701d17&pageNum=0&pageSize=-1&includeExtra=false&useEmoji=false&includeDanmakus=true
+# read liveId from file
+with open("./data/to_be_downloaded.csv","r",encoding="UTF-8") as f:
+    lives = f.readlines()
+
+# download stream danmaku files from danmakus
 api_link = "https://ukamnads.icu/api/v2/live"
+params_setting = {
+    "liveId": "",
+    "pangeNum": 0,
+    "type":0,
+    "pageSize": -1,
+    "includeExtra": "false",
+    "useEmoji": "true",
+}
+# load current data
+with open("./data/output.txt","r") as f:
+    audience = json.load(f)
 
-response = requests.get("")
+
+
+for live in lives[0:1]:
+    liveName = live.split(",")[0]
+    liveId = live.split(",")[1][26:-1]
+    params_setting["liveId"] = liveId
+    # request stream danmakus (plaintext) from danmakus
+    response = requests.get(api_link, params_setting)
+    response_dic = json.loads(response.text)
+    if response.status_code == 200:
+        # success
+        print(f'缺失xml文件：{liveName}\tdanmakus直播间标题：{response_dic["data"]["data"]["live"]["title"]}')
+        # process comments
+        # print(response_dic["data"]["data"]["danmakus"][:10])
+    else:
+        # print error status code
+        print(response_dic)
+
+
