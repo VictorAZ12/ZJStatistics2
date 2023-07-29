@@ -33,7 +33,7 @@ INT seen_count 不重复直播场次的观看次数
 
 使用danmakus_download.py读取存储在to_be_downloaded.csv内的liveID并爬取弹幕数据，处理后存入新的output文件内
 ### 特殊处理说明
-2021.03.24 珈乐 Disco 陪我练歌啦.xml 断流三次，按四次直播计算
+2021.03.24 珈乐 Disco 陪我练歌啦.xml 断流三次，按单次直播计算，使用danmakus_download extra.py下载合并后替换掉danmakus_download.py下载到的文件
 2021.02.17 嘉然 和贝拉一起玩耍 双直播间推流，分别计算为一次直播
 2021.08.14 七夕特别直播.xml [七夕直播为抖音限定](http://t.bilibili.com/558774905908449734)，无法计算
 2021.10.16 抖音奇妙日.xml 抖音限定直播，无法计算

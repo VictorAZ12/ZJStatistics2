@@ -5,13 +5,69 @@ import json
 # path to the directories in which the xml files, log file, and output file are stored
 file_path = "./data/"
 output_path = "./data/"
-# get all file names ending with '.xml'
-filenames = [file for file in os.listdir(file_path) if file.endswith(".xml")]
 # initialise audience data storage and log file
 audience = {}
 with open(output_path + "log.txt","w", encoding="UTF-8") as f:
     f.write("")
-for filename in filenames:
+    
+# get all file names ending with '.json'
+jsonfilenames = [file for file in os.listdir(file_path) if file.endswith(".json")]
+for filename in jsonfilenames:
+    # open an xml file and extract comments
+    with open(file_path + filename, "r") as f:
+        file_content = json.load(f)
+    comments = file_content["danmakus"]
+
+    # extract date from filename
+    stream_date = re.findall("[0-9]{4}\.[0-9]{2}\.[0-9]{2}", filename)[0]
+    stream_date = datetime.strptime(stream_date, "%Y.%m.%d")
+    # extract UID from comments, then add count, needs to be a valid UID
+    uids = {}
+
+    for comment in comments:
+        uid = str(comment["uId"])
+        if re.fullmatch("[0-9]+", uid) is None:
+            # report if non-number UID is found
+            with open(output_path + "log.txt","a", encoding="UTF-8") as f:
+                print("! File " + filename + " contains non-number UIDs.")
+                f.write("! File " + filename + " contains non-number UIDs.\n")
+            break
+        else:
+            if uid in uids:
+                uids[uid]["comment_count"] += 1
+            else:
+                uids[uid] = {
+                    "comment_count" : 1,
+                    "date" : stream_date
+                }
+    if len(uids) < 10:
+        with open(output_path + "log.txt","a", encoding="UTF-8") as f:
+            print("! File " + filename + " contains less than 10 UIDs, skipped.")
+            f.write("! File " + filename + " contains less than 10 UIDs, skipped.\n")
+        continue
+    # add extracted information into database，then print log.
+    for uid in uids:
+        if uid in audience:
+            audience[uid]["stream_count"] += 1
+            audience[uid]["comment_count"] += uids[uid]["comment_count"]
+            if stream_date > audience[uid]["last_seen"]:
+                 audience[uid]["last_seen"] = stream_date
+        else:
+            audience[uid]={
+                "first_seen": stream_date,
+                "last_seen": stream_date,
+                "stream_count": 1,
+                "comment_count": uids[uid]["comment_count"]
+            }
+    with open(output_path + "log.txt","a", encoding="UTF-8") as f:
+            print(f"File {filename}: {len(uids)} viewers, {len(comments)} comments")
+            f.write(f"File {filename}: {len(uids)} viewers, {len(comments)} comments\n")
+
+
+# get all file names ending with '.xml'
+xmlfilenames = [file for file in os.listdir(file_path) if file.endswith(".xml")]
+
+for filename in xmlfilenames:
     # open an xml file and extract comments
     with open(file_path + filename, "r", encoding="UTF-8") as f:
         file_content = f.read()
@@ -60,6 +116,7 @@ for filename in filenames:
     with open(output_path + "log.txt","a", encoding="UTF-8") as f:
             print(f"File {filename}: {len(uids)} viewers, {len(comments)} comments")
             f.write(f"File {filename}: {len(uids)} viewers, {len(comments)} comments\n")
+
 
 # convert datetime to text
 for uid in audience:

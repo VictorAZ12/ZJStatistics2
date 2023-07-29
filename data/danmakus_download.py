@@ -15,13 +15,11 @@ params_setting = {
     "includeExtra": "false",
     "useEmoji": "true",
 }
-# load current data
-with open("./data/output.txt","r") as f:
-    audience = json.load(f)
 
 
 
-for live in lives[0:1]:
+
+for live in lives:
     liveName = live.split(",")[0]
     liveId = live.split(",")[1][26:-1]
     params_setting["liveId"] = liveId
@@ -30,11 +28,14 @@ for live in lives[0:1]:
     response_dic = json.loads(response.text)
     if response.status_code == 200:
         # success
-        print(f'缺失xml文件：{liveName}\tdanmakus直播间标题：{response_dic["data"]["data"]["live"]["title"]}')
+        print(f'缺失xml文件：{liveName}\tdanmakus直播标题：{response_dic["data"]["data"]["live"]["title"]}')
         # process comments
         # print(response_dic["data"]["data"]["danmakus"][:10])
+        with open("./data/"+liveName+".json","w") as f:
+            json.dump(response_dic["data"]["data"],f) 
     else:
         # print error status code
+        print(f'缺失xml文件：{liveName}\t 出现错误：')
         print(response_dic)
 
 
