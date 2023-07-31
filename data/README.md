@@ -27,10 +27,9 @@ INT seen_count 不重复直播场次的观看次数
 ## 需从其他源获取的弹幕数据
 根据extraction脚本的首次运行结果，奶粉站弹幕文件中存在问题、需要从其他源获取数据的直播场次名字已经记录在/data/to_be_downloaded.txt内。。
 1. 获取这些直播场次的liveId
-2. 读入output.txt
-3. 从danmakus的api抓取这些直播场次的弹幕数据, 按照相同的逻辑对output进行维护更新
-4. 输出
-
+2. 从danmakus的api抓取这些直播场次的弹幕数据
+3. 输出为文件
+4. 移除不能使用的xml文件
 使用danmakus_download.py读取存储在to_be_downloaded.csv内的liveID并爬取弹幕数据，处理后存入新的output文件内
 ### 特殊处理说明
 2021.03.24 珈乐 Disco 陪我练歌啦.xml 断流三次，按单次直播计算，使用danmakus_download extra.py下载合并后替换掉danmakus_download.py下载到的文件

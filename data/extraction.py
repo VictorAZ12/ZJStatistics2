@@ -50,6 +50,8 @@ for filename in jsonfilenames:
         if uid in audience:
             audience[uid]["stream_count"] += 1
             audience[uid]["comment_count"] += uids[uid]["comment_count"]
+            if stream_date < audience[uid]["first_seen"]:
+                 audience[uid]["first_seen"] = stream_date
             if stream_date > audience[uid]["last_seen"]:
                  audience[uid]["last_seen"] = stream_date
         else:
@@ -104,6 +106,8 @@ for filename in xmlfilenames:
         if uid in audience:
             audience[uid]["stream_count"] += 1
             audience[uid]["comment_count"] += uids[uid]["comment_count"]
+            if stream_date < audience[uid]["first_seen"]:
+                 audience[uid]["first_seen"] = stream_date
             if stream_date > audience[uid]["last_seen"]:
                  audience[uid]["last_seen"] = stream_date
         else:
